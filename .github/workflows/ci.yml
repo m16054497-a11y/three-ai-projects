@@ -54,6 +54,7 @@ jobs:
           /tmp/smoke/bin/three-ai scientist domains
       - name: Install wheel with game dependencies
         run: |
+          WHEEL="$(pwd)/$(ls dist/*.whl)"
           python -m venv /tmp/smoke-game
-          /tmp/smoke-game/bin/python -m pip install "$(ls dist/*.whl)[game]"
+          /tmp/smoke-game/bin/python -m pip install "three-ai-suite[game] @ file://$WHEEL"
           /tmp/smoke-game/bin/three-ai game themes
