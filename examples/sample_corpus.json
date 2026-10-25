@@ -1,0 +1,22 @@
+{
+  "documents": [
+    {
+      "id": "e1",
+      "title": "Evaluation Driven Development",
+      "tags": ["evaluation", "quality", "llm"],
+      "content": "Build a small evaluation set before changing prompts. Track accuracy, latency, and cost for every candidate and reject regressions automatically."
+    },
+    {
+      "id": "e2",
+      "title": "Retrieval Quality",
+      "tags": ["rag", "retrieval", "search"],
+      "content": "Retrieval quality limits answer quality. Measure recall at k, inspect missed documents, and keep chunk sizes aligned with the questions users ask."
+    },
+    {
+      "id": "e3",
+      "title": "Agent Guardrails",
+      "tags": ["agents", "safety", "tools"],
+      "content": "Give agents the smallest tool surface that solves the task. Require confirmation for destructive actions and log every tool call with its inputs and outputs."
+    }
+  ]
+}
