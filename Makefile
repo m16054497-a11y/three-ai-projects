@@ -36,7 +36,9 @@ package:
 	mkdir -p dist
 	rm -f dist/three-ai-suite-v$(VERSION).zip
 	cd .. && zip -r three-ai-suite/dist/three-ai-suite-v$(VERSION).zip three-ai-suite \
-		-x 'three-ai-suite/.venv/*' '*/__pycache__/*' '*.pyc' 'three-ai-suite/dist/*'
+		-x 'three-ai-suite/.git/*' 'three-ai-suite/.venv/*' '*/__pycache__/*' '*.pyc' \
+		'three-ai-suite/.ruff_cache/*' 'three-ai-suite/.pytest_cache/*' \
+		'three-ai-suite/.mypy_cache/*' 'three-ai-suite/dist/*'
 
 clean:
 	rm -rf .ruff_cache .pytest_cache .mypy_cache dist build
