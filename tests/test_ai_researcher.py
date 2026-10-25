@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import ai_researcher
+from three_ai_suite import researcher as ai_researcher
 
 
 class CorpusTests(unittest.TestCase):

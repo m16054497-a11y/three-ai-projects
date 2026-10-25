@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install
+        run: python -m pip install -e '.[dev]'
+      - name: Lint
+        run: |
+          python -m ruff check src tests
+          python -m ruff format --check src tests
+      - name: Test
+        run: python -m unittest discover -s tests -t . -v
+
+  package:
+    name: Build and smoke-test package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Build
+        run: |
+          python -m pip install 'build>=1,<2'
+          python -m build
+      - name: Install wheel without optional dependencies
+        run: |
+          python -m venv /tmp/smoke
+          /tmp/smoke/bin/python -m pip install dist/*.whl
+          /tmp/smoke/bin/three-ai --help
+          /tmp/smoke/bin/three-ai researcher topics
+          /tmp/smoke/bin/three-ai scientist domains
+      - name: Install wheel with game dependencies
+        run: |
+          python -m venv /tmp/smoke-game
+          /tmp/smoke-game/bin/python -m pip install "$(ls dist/*.whl)[game]"
+          /tmp/smoke-game/bin/three-ai game themes

@@ -6,7 +6,7 @@ from dataclasses import replace
 
 from fastapi.testclient import TestClient
 
-import ai_game_developer as game
+from three_ai_suite import game
 
 
 def make_state(seed: int = 7) -> game.GameState:

@@ -1,0 +1,8 @@
+"""Allow ``python -m three_ai_suite`` to run the unified CLI."""
+
+from __future__ import annotations
+
+from .cli import main
+
+if __name__ == "__main__":
+    raise SystemExit(main())

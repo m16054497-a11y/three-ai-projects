@@ -1,325 +1,244 @@
 # Three AI Suite
 
-حزمة من ثلاثة مشاريع برمجية مستقلة، جاهزة للتشغيل والنشر والتوزيع، مبنية على
-المشاريع الثلاثة الموجودة في ملف `Three.PDF` مع إعادة كتابة كاملة للكود
-وإصلاح الأخطاء وإضافة الاختبارات والتوثيق وحزمة التوزيع.
+[![CI](https://github.com/m16054497-a11y/three-ai-projects/actions/workflows/ci.yml/badge.svg)](https://github.com/m16054497-a11y/three-ai-projects/actions/workflows/ci.yml)
 
-- **AI Researcher**: أداة سطر أوامر للبحث والتلخيص في مكتبة مستندات محلية.
-- **AI Scientist**: حلقة فرضيات وتجارب محاكاة مع تحديث بايزي وتوصية نهائية.
-- **AI Game Developer**: خدمة FastAPI لتوليد لعبة Dungeon Crawler قابلة للعب
-  وتصديرها كملف HTML واحد يعمل دون إنترنت.
+ثلاثة مشاريع AI مستقلة، مجمّعة في حزمة واحدة قابلة للتثبيت وأوامر موحّدة. لا
+تحتاج المشاريع إلى مفاتيح API أو اتصال بالإنترنت، ويمكن تشغيلها محليًا على
+Linux وmacOS وWindows.
 
-الإصدار: `1.0.0`  
-الترخيص: MIT  
-Python: `3.10+`
+| المشروع | الأمر | الوظيفة | الاعتماديات |
+|---|---|---|---|
+| AI Researcher | `three-ai researcher` | بحث وتلخيص مكتبة مستندات محلية | لا شيء |
+| AI Scientist | `three-ai scientist` | فرضيات وحلقة تجارب وتحديث بايزي | لا شيء |
+| AI Game Developer | `three-ai game` | توليد لعبة HTML قابلة للعب وخدمة FastAPI | `[game]` |
 
----
-
-## المحتويات
-
-```text
-three-ai-suite/
-├── ai_researcher.py          # المشروع 1: CLI بدون اعتماديات خارجية
-├── ai_scientist.py           # المشروع 2: CLI بدون اعتماديات خارجية
-├── ai_game_developer.py      # المشروع 3: FastAPI + تصدير HTML مستقل
-├── examples/
-│   └── sample_corpus.json    # مثال لمكتبة مستندات مخصصة
-├── tests/                    # 45 اختبارًا آليًا
-├── requirements.txt          # اعتماديات مشروع اللعبة
-├── requirements-dev.txt      # اعتماديات التطوير والاختبار
-├── pyproject.toml            # حزمة قابلة للتثبيت + إعدادات Ruff
-├── Makefile                  # أوامر التشغيل والاختبار والتغليف
-├── LICENSE
-└── README.md
-```
+الإصدار: `2.0.0` · Python: `3.10+` · الترخيص: MIT
 
 ---
 
 ## التثبيت السريع
 
-المشروعان 1 و2 يعملان مباشرة دون تثبيت أي مكتبة:
+الطريقة الموصى بها هي استخدام سكربت التثبيت، لأنه ينشئ بيئة افتراضية معزولة
+ويثبّت كل ما تحتاجه:
 
 ```bash
-python3 ai_researcher.py topics
-python3 ai_scientist.py domains
+git clone https://github.com/m16054497-a11y/three-ai-projects.git
+cd three-ai-projects
+./scripts/install.sh
+source .venv/bin/activate
+three-ai --help
 ```
 
-لتشغيل المشروع الثالث والاختبارات، يُفضّل إنشاء بيئة افتراضية:
+على Windows (PowerShell):
+
+```powershell
+git clone https://github.com/m16054497-a11y/three-ai-projects.git
+cd three-ai-projects
+.\scripts\install.ps1
+.\.venv\Scripts\Activate.ps1
+three-ai --help
+```
+
+### التثبيت اليدوي
 
 ```bash
-cd three-ai-suite
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements-dev.txt
-make test
+python -m pip install --upgrade pip
+python -m pip install '.[all]'
 ```
 
-> ملاحظة توافق: المشروع مختبر مع `fastapi 0.162` و`starlette 1.10`.
-> إذا كانت لديك نسخة قديمة من FastAPI، فإن `pip install -r requirements.txt`
-> سيحدّثها إلى نسخة متوافقة.
+- لتثبيت المشروعين 1 و2 فقط: `python -m pip install .`
+- لتثبيت مشروع اللعبة فقط: `python -m pip install '.[game]'`
+- لتثبيت بيئة التطوير والاختبارات: `python -m pip install '.[dev]'`
 
----
+> **مهم:** لا تستخدم `pip install` مباشرة على Python النظام في Kali أو
+> Debian/Ubuntu الحديثة، لأنه سيرفض التثبيت بسبب `externally-managed-environment`.
+> استخدم البيئة الافتراضية أو `scripts/install.sh`.
 
-## 1. AI Researcher
-
-أداة بحث واسترجاع وتلخيص تعمل بالكامل من سطر الأوامر. لا تحتاج إلى Internet أو
-مكتبات خارجية.
-
-### الميزات
-
-- مكتبة مدمجة من 10 مستندات حول موضوعات AI.
-- تحميل مكتبة مخصصة من JSON.
-- ترتيب نتائج البحث بأوزان مختلفة: العنوان 4، الوسوم 2، المحتوى 1، مع مكافأة
-  للعبارة المطابقة في العنوان أو المحتوى.
-- تلخيص استخلاصي مع المصادر والأسئلة المفتوحة.
-- مخرجات نصية أو JSON قابلة للكتابة إلى ملف.
-
-### أمثلة
+### من GitHub مباشرة دون استنساخ
 
 ```bash
-# عرض كل المستندات
-python3 ai_researcher.py topics
-
-# بحث
-python3 ai_researcher.py search "retrieval augmented generation"
-
-# تحديد عدد النتائج
-python3 ai_researcher.py search "agents" --top 2
-
-# تلخيص بصيغة JSON
-python3 ai_researcher.py summarize "efficient fine tuning" --json
-
-# استخدام مكتبة مخصصة
-python3 ai_researcher.py --corpus examples/sample_corpus.json topics
-python3 ai_researcher.py --corpus examples/sample_corpus.json search "rag"
-
-# كتابة التقرير إلى ملف
-python3 ai_researcher.py summarize "evaluation" --out reports/evaluation.md
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install "three-ai-suite[all] @ git+https://github.com/m16054497-a11y/three-ai-projects.git@v2.0.0"
+three-ai --help
 ```
 
-### صيغة المكتبة المخصصة
+### من ملف ZIP
 
-يُقبل شكلان: كائن يحتوي مفتاح `documents`، أو مصفوفة مباشرة.
-
-```json
-{
-  "documents": [
-    {
-      "id": "d1",
-      "title": "Document title",
-      "tags": ["ai", "retrieval"],
-      "content": "A paragraph of searchable text."
-    }
-  ]
-}
-```
-
-يتم التحقق من الحقول، ورفض المعرّفات المكررة، وإظهار رسالة خطأ واضحة عند وجود
-ملف غير صالح.
-
-### رموز الخروج
-
-- `0`: نجاح، بما في ذلك البحث الذي لا يُرجع نتائج.
-- `2`: خطأ في الاستخدام أو في ملف المكتبة.
-
----
-
-## 2. AI Scientist
-
-حلقة قرار تحاكي منهجية البحث العلمي: توليد فرضيات، اختبارها، تحديث
-الاحتمالات، ثم اقتراح الإجراء الأفضل.
-
-### الميزات
-
-- خمسة مجالات: conversion, retention, performance, reliability, satisfaction.
-- استنتاج المجال تلقائيًا من نص السؤال، أو فرضه يدويًا.
-- تحديث بايزي مستقر عدديًا باستخدام log-likelihood.
-- حلقة اختبار حتمية بالاعتماد على `seed`.
-- تقرير Markdown أو JSON مع سجل كامل للجولات.
-- إمكانية حفظ التقرير في ملف.
-
-### أمثلة
+نزّل الحزمة من صفحة الإصدارات، ثم:
 
 ```bash
-# عرض المجالات
-python3 ai_scientist.py domains
-
-# تشغيل كامل
-python3 ai_scientist.py run "How can we improve checkout conversion?"
-
-# تحديد المجال والمعاملات
-python3 ai_scientist.py run "How do we reduce churn?" \
-  --domain retention --rounds 6 --seed 7 --threshold 0.9
-
-# مخرجات JSON
-python3 ai_scientist.py run "How do we cut latency?" --format json
-
-# حفظ التقرير
-python3 ai_scientist.py run "How do we improve reliability?" --out reports/reliability.md
-```
-
-### المنهجية
-
-1. كل فرضية تتنبأ بقيمة `claim` عند اختبارها، وبقيمة `0.0` عند عدم اختبارها.
-2. يتم توليد مشاهدة من توزيع Gaussian حول التنبؤ، مع ضوضاء `sigma`.
-3. يتم تحديث الاحتمالات باستخدام بايز.
-4. تُختبر كل فرضية مرة واحدة، ثم تُختبر الفرضية الأعلى احتمالًا حتى الوصول إلى
-   عتبة التقارب.
-
-> هذه محاكاة تعليمية وليست تجربة سببية حقيقية. قيم `claim` افتراضية قابلة
-> للتعديل، والنتائج لا تُغني عن قياس أثر فعلي في الإنتاج.
-
----
-
-## 3. AI Game Developer
-
-خدمة FastAPI تولّد لعبة Dungeon Crawler حتمية من `seed`، وتصدّرها كملف HTML
-واحد مستقل يعمل في المتصفح دون خادم أو Internet.
-
-### الميزات
-
-- ثلاثة مستويات متصلة فعليًا (غرف + ممرات) لكل لعبة.
-- أربعة themes: dungeon, space, forest, cyberpunk.
-- قتال وجمع عناصر وأبواب انتقال بين المستويات.
-- حالة لعبة محفوظة في الذاكرة مع قفل thread-safe.
-- تصدير HTML مستقل يحتوي على المحرك كاملًا بلغة JavaScript.
-- واجهة API موثقة تلقائيًا عبر Swagger UI.
-
-### التشغيل
-
-```bash
-pip install -r requirements.txt
-uvicorn ai_game_developer:app --reload
-# أو
-make run-game
-```
-
-- التوثيق التفاعلي: <http://127.0.0.1:8000/docs>
-- فحص الصحة: <http://127.0.0.1:8000/health>
-
-### واجهة API
-
-| الطريقة | المسار | الوصف |
-|---|---|---|
-| GET | `/` | معلومات الخدمة |
-| GET | `/health` | الحالة وعدد الألعاب النشطة |
-| GET | `/themes` | الثيمات وإحصاءاتها |
-| POST | `/games` | إنشاء لعبة جديدة |
-| GET | `/games/{id}` | حالة اللعبة |
-| POST | `/games/{id}/move` | تنفيذ حركة |
-| DELETE | `/games/{id}` | حذف اللعبة |
-| GET | `/games/{id}/export` | تنزيل ملف HTML قابل للعب |
-| GET | `/games/{id}/export?download=false` | عرض HTML مباشرة |
-
-### إنشاء لعبة وتصديرها
-
-```bash
-curl -s -X POST http://127.0.0.1:8000/games \
-  -H 'Content-Type: application/json' \
-  -d '{"seed": 42, "theme": "dungeon", "width": 20, "height": 12}'
-
-# استبدل <GAME_ID> بالمعرّف الناتج
-curl -OJ http://127.0.0.1:8000/games/<GAME_ID>/export
-```
-
-أو باستخدام Python:
-
-```python
-from ai_game_developer import create_game, render_export_html
-
-state = create_game(seed=42, theme_id="space")
-html = render_export_html(state)
-with open("space-game.html", "w", encoding="utf-8") as handle:
-    handle.write(html)
-```
-
-### التحكم داخل ملف HTML
-
-- `WASD` أو الأسهم للحركة.
-- اصطدام بالعدو = قتال تلقائي.
-- العناصر تمنح صحة ونقاطًا.
-- الباب `X` ينقلك للمستوى التالي.
-- إكمال المستويات الثلاثة = فوز.
-- زر `Reset to new game` يعيد اللعبة من البداية بنفس البذرة.
-
-### حدود النشر الحالية
-
-هذه نسخة عرض جاهزة للتوزيع والتشغيل المحلي، وليست خدمة إنتاجية متعددة
-المستخدمين. قبل النشر العام:
-
-- استبدل تخزين الذاكرة بقاعدة بيانات أو Redis.
-- أضف مصادقة وحدود معدل الطلبات.
-- شغّل أكثر من عامل فقط بعد نقل الحالة إلى مخزن مشترك.
-- راجع سياسات CORS وContent-Security-Policy حسب نطاقك.
-- أضف مراقبة وتسجيلًا مركزيًا.
-
----
-
-## التثبيت كحزمة
-
-يمكن تثبيت الحزمة واستخدام أوامر مختصرة:
-
-```bash
-pip install .
-ai-researcher topics
-ai-scientist domains
-
-# لعبة + أمر التشغيل
-pip install '.[game]'
-ai-game
-```
-
-أو تثبيت بيئة التطوير كاملة:
-
-```bash
-pip install -r requirements-dev.txt
+unzip three-ai-suite-v2.0.0.zip
+cd three-ai-suite
+./scripts/install.sh
+source .venv/bin/activate
+three-ai --help
 ```
 
 ---
 
-## الاختبارات والجودة
+## البدء السريع
 
 ```bash
-make test
-make lint
+# 1. AI Researcher
+three-ai researcher topics
+three-ai researcher search "retrieval augmented generation"
+three-ai researcher summarize "efficient fine tuning" --json
+
+# 2. AI Scientist
+three-ai scientist domains
+three-ai scientist run "How do we reduce churn?" --seed 7
+
+# 3. AI Game Developer
+three-ai game themes
+three-ai game export --seed 42 --theme dungeon --output dungeon.html
+three-ai game serve
 ```
 
-- 45 اختبارًا آليًا باستخدام `unittest` القياسي.
-- اختبارات توليد المستويات، القتال، الجمع، الانتقال، الفوز، وواجهة API.
-- اختبارات البحث، التحقق من المكتبات، التحديث البايزي، والحتمية.
-- `ruff` لفحص الأسلوب والأخطاء الشائعة.
+افتح `dungeon.html` في أي متصفح للعب دون خادم أو إنترنت. وعند تشغيل
+`three-ai game serve`، افتح <http://127.0.0.1:8000/docs> لواجهة API التفاعلية.
+
+يمكن أيضًا تشغيل الحزمة دون تثبيت الأوامر:
+
+```bash
+python -m three_ai_suite --help
+python -m three_ai_suite researcher topics
+python -m three_ai_suite scientist domains
+python -m three_ai_suite game export --seed 7 --theme space -o space.html
+```
 
 ---
 
-## التغليف والتوزيع
+## Docker
+
+خدمة اللعبة جاهزة للتشغيل في حاوية:
+
+```bash
+docker build -t three-ai-game .
+docker run --rm -p 8000:8000 three-ai-game
+```
+
+ثم افتح <http://127.0.0.1:8000/docs>. الصورة لا تحتاج إلى تثبيت Python محليًا.
+
+---
+
+## هيكل المستودع
+
+```text
+three-ai-projects/
+├── src/three_ai_suite/        # الحزمة القابلة للتثبيت
+│   ├── cli.py                 # الأوامر الموحّدة
+│   ├── researcher.py          # المشروع 1
+│   ├── scientist.py           # المشروع 2
+│   └── game.py                # المشروع 3
+├── docs/                      # دليل التثبيت ودليل كل مشروع
+├── examples/                  # أمثلة مكتبة المستندات
+├── scripts/                   # مثبّتات Linux/macOS وWindows
+├── tests/                     # 53 اختبارًا آليًا
+├── Dockerfile                 # خدمة اللعبة
+├── pyproject.toml             # بيانات الحزمة والأوامر
+├── Makefile                   # أوامر التطوير والتغليف
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── SECURITY.md
+└── LICENSE
+```
+
+---
+
+## المشاريع
+
+### 1. AI Researcher
+
+أداة سطر أوامر للبحث في مكتبة مستندات محلية، مع ترتيب النتائج وتلخيص استخلاصي
+ومصادر وأسئلة مفتوحة. تعمل دون Internet أو مكتبات خارجية، وتقبل مكتبة مخصصة
+بصيغة JSON.
+
+- الدليل الكامل: [`docs/ai-researcher.md`](docs/ai-researcher.md)
+- مثال مكتبة: [`examples/sample_corpus.json`](examples/sample_corpus.json)
+
+```bash
+three-ai researcher --corpus examples/sample_corpus.json search "rag"
+```
+
+### 2. AI Scientist
+
+حلقة قرار تحاكي منهجية البحث العلمي: توليد فرضيات، اختبارها، تحديث الاحتمالات
+باستخدام بايز، ثم توصية بالإجراء الأفضل. النتائج حتمية عند تثبيت `seed`.
+
+- الدليل الكامل: [`docs/ai-scientist.md`](docs/ai-scientist.md)
+
+```bash
+three-ai scientist run "How can we improve checkout conversion?" \
+  --domain conversion --rounds 6 --seed 7 --format json
+```
+
+> هذه محاكاة تعليمية وليست تجربة سببية حقيقية.
+
+### 3. AI Game Developer
+
+خدمة FastAPI تولّد لعبة Dungeon Crawler حتمية من `seed`، مع ثلاثة مستويات
+متصلة وقتال وجمع عناصر وأبواب انتقال. يمكن تصدير كل لعبة كملف HTML واحد يعمل
+دون خادم أو Internet.
+
+- الدليل الكامل: [`docs/ai-game-developer.md`](docs/ai-game-developer.md)
+
+```bash
+three-ai game export --seed 42 --theme cyberpunk -o cyberpunk.html
+three-ai game serve --host 127.0.0.1 --port 8000
+```
+
+---
+
+## التطوير والاختبار
+
+```bash
+make install     # إنشاء .venv وتثبيت [dev]
+make test        # 53 اختبارًا
+make lint        # Ruff
+make check       # lint + tests
+make format      # تنسيق المصادر
+```
+
+لتثبيت بيئة التطوير كاملة:
+
+```bash
+python -m pip install -e '.[dev]'
+```
+
+الاختبارات تغطي البحث والتحقق من المكتبات، التحديث البايزي والحتمية، توليد
+المستويات والقتال والانتقال والفوز، وواجهة API.
+
+---
+
+## التغليف والإصدارات
 
 ```bash
 make package
 ```
 
-ينتج ملف `dist/three-ai-suite-v1.0.0.zip` داخل المشروع، مع استبعاد ملفات
-الذاكرة المؤقتة. الملفات الثلاثة الأساسية يمكن نسخها وتشغيلها منفردة:
-
-- `ai_researcher.py`: ملف واحد، بدون اعتماديات.
-- `ai_scientist.py`: ملف واحد، بدون اعتماديات.
-- `ai_game_developer.py`: ملف واحد + `requirements.txt`.
+ينتج `dist/three-ai-suite-v2.0.0.zip` مع استبعاد Git والبيئات الافتراضية
+والذاكرة المؤقتة. سجل التغييرات في [`CHANGELOG.md`](CHANGELOG.md).
 
 ---
 
-## ما تم إصلاحه مقارنة بالنسخة الأولى في PDF
+## استكشاف الأخطاء
 
-- إزالة اعتماد `click` من المشروعين 1 و2 واستبداله بـ `argparse` القياسي.
-- إصلاح خطأ منطقي في القتال: اللاعب كان يقتل العدو دون أن ينتقل إلى خانته.
-- استبدال توليد الخرائط العشوائي غير المضمون بمولد غرف وممرات متصل.
-- استكمال تصدير اللعبة: النسخة السابقة كانت تعرض الخريطة دون منطق لعب فعلي.
-- إضافة تحقق شامل من المدخلات وأخطاء واضحة بدلًا من الانهيار.
-- إضافة اختبارات آلية وتوثيق وحزمة تثبيت وترخيص.
-- إزالة الأسرار وعدم إضافة أي اتصالات شبكية غير ضرورية.
+| المشكلة | الحل |
+|---|---|
+| `externally-managed-environment` | استخدم `./scripts/install.sh` أو بيئة افتراضية |
+| `command not found: three-ai` | فعّل البيئة: `source .venv/bin/activate` |
+| `No module named fastapi` | ثبّت extras اللعبة: `python -m pip install '.[game]'` |
+| `Python 3.10+ is required` | حدّث Python أو استخدم `python3.12` |
+| فشل pip بسبب DNS | تحقق من الشبكة، أو استخدم `--index-url` لمصدر pip موثوق |
+| لعبة لا تعمل في المتصفح | استخدم متصفحًا حديثًا وافتح ملف HTML الناتج مباشرة |
+
+دليل تثبيت موسّع: [`docs/installation.md`](docs/installation.md).
 
 ---
 
 ## الترخيص
 
-MIT. راجع ملف [LICENSE](LICENSE).
-
-Copyright (c) 2026 Adham Sabry.
+MIT. راجع [`LICENSE`](LICENSE). حقوق النشر (c) 2026 Adham Sabry.

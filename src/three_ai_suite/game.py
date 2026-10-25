@@ -6,13 +6,15 @@ dungeon crawler. Every game can be exported as a single HTML file that runs
 offline in any modern browser, with no server, assets, or CDN required.
 
 Run the API:
-    pip install -r requirements.txt
-    uvicorn ai_game_developer:app --reload
+    three-ai game serve --reload
 
 Open the interactive docs:
     http://127.0.0.1:8000/docs
 
 Create and export a game:
+    three-ai game export --seed 42 --theme dungeon --output dungeon.html
+
+Alternatively, use the HTTP API:
     curl -X POST http://127.0.0.1:8000/games \
          -H 'Content-Type: application/json' \
          -d '{"seed": 42, "theme": "dungeon"}'
@@ -37,7 +39,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
-__version__ = "1.0.0"
+from . import __version__
 
 WALL, FLOOR, PLAYER, ENEMY, ITEM, EXIT = "#", ".", "@", "E", "I", "X"
 LEVELS_PER_GAME = 3
@@ -1157,7 +1159,7 @@ def run() -> None:
     """Run the API with uvicorn (used by the ``ai-game`` console script)."""
     import uvicorn
 
-    uvicorn.run("ai_game_developer:app", host="127.0.0.1", port=8000, reload=False)
+    uvicorn.run("three_ai_suite.game:app", host="127.0.0.1", port=8000, reload=False)
 
 
 def _get_game(game_id: str) -> GameState:

@@ -10,10 +10,10 @@ This is a simulation. The claims are configurable illustrative priors, not
 measured causal effects.
 
 Examples:
-    python ai_scientist.py domains
-    python ai_scientist.py run "How can we improve checkout conversion?"
-    python ai_scientist.py run "How do we reduce churn?" --format json
-    python ai_scientist.py run "How do we cut latency?" --rounds 6 --seed 7
+    three-ai scientist domains
+    three-ai scientist run "How can we improve checkout conversion?"
+    three-ai scientist run "How do we reduce churn?" --format json
+    three-ai scientist run "How do we cut latency?" --rounds 6 --seed 7
 
 License: MIT
 """
@@ -30,7 +30,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-__version__ = "1.0.0"
+from . import __version__
 
 DOMAINS: dict[str, tuple[tuple[str, float], ...]] = {
     "conversion": (
@@ -444,16 +444,16 @@ def _emit(text: str, out_path: Path | None) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="ai_scientist",
+        prog="three-ai scientist",
         description=(
             "Generate hypotheses, run a simulated experiment loop, and recommend an action."
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Examples:\n"
-            '  python ai_scientist.py run "How can we improve checkout conversion?"\n'
-            '  python ai_scientist.py run "How do we reduce churn?" --format json\n'
-            '  python ai_scientist.py run "How do we cut latency?" --rounds 6 --seed 7'
+            '  three-ai scientist run "How can we improve checkout conversion?"\n'
+            '  three-ai scientist run "How do we reduce churn?" --format json\n'
+            '  three-ai scientist run "How do we cut latency?" --rounds 6 --seed 7'
         ),
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")

@@ -7,10 +7,10 @@ it useful as a standalone CLI or as a reference implementation for a larger
 retrieval pipeline.
 
 Examples:
-    python ai_researcher.py topics
-    python ai_researcher.py search "retrieval augmented generation"
-    python ai_researcher.py summarize "efficient fine tuning" --json
-    python ai_researcher.py --corpus examples/sample_corpus.json search "rag"
+    three-ai researcher topics
+    three-ai researcher search "retrieval augmented generation"
+    three-ai researcher summarize "efficient fine tuning" --json
+    three-ai researcher --corpus examples/sample_corpus.json search "rag"
 
 Custom corpus format (either form is accepted):
     {"documents": [{"id": "...", "title": "...", "tags": ["..."], "content": "..."}]}
@@ -30,7 +30,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-__version__ = "1.0.0"
+from . import __version__
 
 STOPWORDS = frozenset(
     {
@@ -447,14 +447,14 @@ def _emit(text: str, out_path: Path | None) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="ai_researcher",
+        prog="three-ai researcher",
         description="Search and summarize a local research corpus.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Examples:\n"
-            '  python ai_researcher.py search "retrieval augmented generation"\n'
-            '  python ai_researcher.py summarize "efficient fine tuning" --json\n'
-            "  python ai_researcher.py --corpus examples/sample_corpus.json topics"
+            '  three-ai researcher search "retrieval augmented generation"\n'
+            '  three-ai researcher summarize "efficient fine tuning" --json\n'
+            "  three-ai researcher --corpus examples/sample_corpus.json topics"
         ),
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")

@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import ai_scientist
+from three_ai_suite import scientist as ai_scientist
 
 
 class ClassificationTests(unittest.TestCase):
